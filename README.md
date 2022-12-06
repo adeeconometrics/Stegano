@@ -12,5 +12,5 @@ Contains simple implementation on methods in steganography
     - [ ] DCT
 - [ ] Documentation 
 - [x] Set up Linter
-
+- [ ] Set up encrypted msg
 

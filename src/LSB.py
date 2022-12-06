@@ -93,7 +93,7 @@ def find_img(img_path:Path) -> List[Path]:
     Returns:
         List[Path]: List of image paths that ends with '.jpg' or '.png'
     """
-    if not os.path.exist(img_path):
+    if not os.path.exists(img_path):
         raise ValueError(f'Invalid path: {img_path}')
     return [
         f_name/img_path for f_name in os.listdir(img_path) if f_name.endswith(('.jpg','.png'))
