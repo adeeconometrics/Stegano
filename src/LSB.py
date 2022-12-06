@@ -1,8 +1,7 @@
+import os 
 from typing import List, Literal
-from os.path import exist
-from os import listdir 
-from pathlib import Path 
-from argparse import ArgumentParser, Namespace
+from pathlib import Path
+from argparse import ArgumentParser
 
 import numpy as np
 from PIL import Image
@@ -47,7 +46,8 @@ def encode(img: Image.Image, msg: str, signature: str = '$t3g0') -> Image.Image:
         pixels = pixels.reshape(_h, _w, n)
         return Image.fromarray(pixels.astype('uint8'), img.mode)
 
-def decode(img:Image.Image) -> str:
+
+def decode(img: Image.Image, signature: str = '$t3g0') -> str:
     """Finds the hidden message in the image
 
     Args:
@@ -72,13 +72,12 @@ def decode(img:Image.Image) -> str:
             hidden_bits += (bin(pixels[x][y])[2:][-1])
 
     hidden_bits = [hidden_bits[i:i+8] for i in range(0, len(hidden_bits), 8)]
-    for i in range(len(hidden_bits)):
-        if decoded_msg[-5:] == '$t3g0':
+    for i in (hidden_bits):
+        if decoded_msg[-5:] == signature:
             break
-        else:
-            decoded_msg += chr(int(hidden_bits[i], 2))
+        decoded_msg += chr(int(i, 2))
 
-    if '$t3g0' in decoded_msg: 
+    if signature in decoded_msg:
         return decoded_msg
     return 'no hidden message found'
 
@@ -94,15 +93,15 @@ def find_img(img_path:Path) -> List[Path]:
     Returns:
         List[Path]: List of image paths that ends with '.jpg' or '.png'
     """
-    if not exist(img_path):
+    if not os.path.exist(img_path):
         raise ValueError(f'Invalid path: {img_path}')
     return [
-        f_name/img_path for f_name in listdir(img_path) if f_name.endswith(('.jpg','.png'))
+        f_name/img_path for f_name in os.listdir(img_path) if f_name.endswith(('.jpg','.png'))
     ]
 
 if __name__ == '__main__':
     parser = ArgumentParser(
-        decription='Hide Message to Image in -inpath and stores it to -outpath'
+        description='Hide Message to Image in -inpath and stores it to -outpath'
     )
 
     parser.add_argument(
@@ -114,14 +113,13 @@ if __name__ == '__main__':
     )
 
     parser.add_argument(
-        '-encode_message', metavar='encoded_msg', type=str, help='Message to be encoded in the image'
+        '-encode_message', metavar='encode_message', type=str, help='Message to be encoded in the image'
     )
 
-    rel_path:Path = Path.home()/'Downloads'/'Steno'
-    img_path:Path = rel_path/'SampleImages'/'BabyBear.jpg'
+    args = parser.parse_args()
 
-    img = Image.open(img_path).convert('RGB')
-    enc_img = encode(img, 'secret message hidden in the image')
+    img = Image.open(args.inpath)
+    enc_img = encode(img, args.encode_message)
     
-    enc_img.save(rel_path/'EncodedImages'/img_path.name)
+    enc_img.save(args.outpath/args.inpath.name)
     print(decode(enc_img))
