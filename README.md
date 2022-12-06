@@ -8,7 +8,9 @@ Contains simple implementation on methods in steganography
 - [x] Least Significant Bit encoding 
 - [ ] Discrete Cosine Transform encoding
 - [ ] CLI interface
+    - [x] LSB
+    - [ ] DCT
 - [ ] Documentation 
-- [ ] Linter
+- [x] Set up Linter
 
 
